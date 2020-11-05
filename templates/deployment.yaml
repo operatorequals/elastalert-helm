@@ -30,7 +30,6 @@ spec:
           volumeMounts:
           - name: rules
             mountPath: '/opt/elastalert/ruleset'
-            # subPath: ruleset
           - name: data
             mountPath: '/opt/elastalert/rules'
             subPath: rules
@@ -60,14 +59,15 @@ spec:
             - name: api-config
               mountPath: '/opt/elastalert-server/config/config.json'
               subPath: config.json
-
+{{- if .Values.extraVolumeMounts }}
+{{ toYaml .Values.extraVolumeMounts | indent 12 }}
+{{- end }}
           ports:
-            - name: http
-              containerPort: 3030
-              protocol: TCP
-            - name: ws
-              containerPort: 3333
-              protocol: TCP
+  {{- range $port := .Values.service.ports }}
+            - name: {{ $port.name }}
+              containerPort: {{ $port.containerPort }}
+              protocol: {{ $port.protocol }}
+  {{- end }}
           livenessProbe:
             httpGet:
               path: /
@@ -91,9 +91,16 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
+{{- if .Values.extraVolumes }}
+{{ toYaml .Values.extraVolumes | indent 8 }}
+{{- end }}
         - name: data
+          {{- if .Values.persistence.enabled | default false }}
           persistentVolumeClaim:
             claimName: {{ template "elastalert.fullname" . }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         - name: config
           configMap:
             name: {{ template "elastalert.fullname" . }}-config
@@ -120,4 +127,5 @@ spec:
             - key: {{ $key }}
               path: {{ $key }}.yaml
               mode: 0777
+
 {{- end }}

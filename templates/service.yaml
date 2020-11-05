@@ -4,17 +4,17 @@ metadata:
   name: {{ include "elastalert.fullname" . }}
   labels:
 {{ include "elastalert.labels" . | indent 4 }}
+  annotations:
+{{ toYaml .Values.service.annotations | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
-    - port: {{ .Values.service_ws.port }}
-      targetPort: ws
-      protocol: TCP
-      name: ws
+  {{- range $port := .Values.service.ports }}
+    - name: {{ $port.name }}
+      port: {{ $port.containerPort }}
+      targetPort: {{ $port.containerPort }}
+      protocol: {{ $port.protocol }}
+  {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "elastalert.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
