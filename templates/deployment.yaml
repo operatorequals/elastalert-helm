@@ -101,24 +101,30 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+
         - name: baserule-config
           configMap:
             name: {{ template "elastalert.fullname" . }}-baserule-config
             items:
             - key: baserule_config
               path: BaseRule.config
+
         - name: config
-          configMap:
-            name: {{ template "elastalert.fullname" . }}-config
+          secret:
+            defaultMode: 420
+            secretName: {{ template "elastalert.fullname" . }}-config
             items:
-            - key: elastalert_config
-              path: config.yaml
+              - key: elastalert_config
+                path: config.yaml
+
         - name: api-config
-          configMap:
-            name: {{ template "elastalert.fullname" . }}-config
+          secret:
+            defaultMode: 420
+            secretName: {{ template "elastalert.fullname" . }}-config
             items:
-            - key: elastalert_api_config
-              path: config.json
+              - key: elastalert_api_config
+                path: config.json
+
         - name: rules
           configMap:
             name: {{ template "elastalert.fullname" . }}-rules

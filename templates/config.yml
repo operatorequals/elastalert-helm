@@ -1,6 +1,6 @@
 #Ref: https://github.com/helm/charts/blob/master/stable/elastalert/templates/config.yaml
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   name: {{ template "elastalert.fullname" . }}-config
   labels:
@@ -8,67 +8,10 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+type: Opaque
 data:
   elastalert_config: |-
-    ---
-    rules_folder: /opt/elastalert/rules
-    # scan_subdirectories: false
-    run_every:
-      minutes: {{ .Values.runIntervalMins }}
-{{- if .Values.realertIntervalMins }}
-    realert:
-      minutes: {{ .Values.realertIntervalMins }}
-{{- end }}
-    buffer_time:
-      minutes: {{ .Values.bufferTimeMins }}
-    es_host: {{ .Values.elasticsearch.host }}
-    es_port: {{ .Values.elasticsearch.port }}
-{{- if .Values.elasticsearch.username }}
-    es_username: {{ .Values.elasticsearch.username }}
-{{- end }}
-{{- if .Values.elasticsearch.password }}
-    es_password: {{ .Values.elasticsearch.password }}
-{{- end }}
-    writeback_index: {{ .Values.writebackIndex }}
-    use_ssl: {{ .Values.elasticsearch.useSsl }}
-    verify_certs: {{ .Values.elasticsearch.verifyCerts }}
-{{- if .Values.elasticsearch.clientCert }}
-    client_cert: {{ .Values.elasticsearch.clientCert }}
-{{- end }}
-{{- if .Values.elasticsearch.clientKey }}
-    client_key: {{ .Values.elasticsearch.clientKey }}
-{{- end }}
-{{- if .Values.elasticsearch.caCerts }}
-    ca_certs: {{ .Values.elasticsearch.caCerts }}
-{{- end }}
-    alert_time_limit:
-      minutes: {{ .Values.alertRetryLimitMins }}
-{{- if .Values.extraConfigOptions }}
-{{ toYaml .Values.extraConfigOptions | indent 4 }}
-{{- end }}
+    {{ include "elastalert.config" . | b64enc }}
 
   elastalert_api_config: |-
-    {
-      "appName": "elastalert-server",
-      "port": 3030,
-      "wsport": 3333,
-      "elastalertPath": "/opt/elastalert",
-      "verbose": false,
-      "es_debug": false,
-      "debug": false,
-      "rulesPath": {
-        "relative": true,
-        "path": "/rules"
-      },
-      "templatesPath": {
-        "relative": true,
-        "path": "/rule_templates"
-      },
-      "es_host": "{{ .Values.elasticsearch.host }}",
-      "es_port": {{ .Values.elasticsearch.port }},
-      "es_username": "{{ .Values.elasticsearch.username }}",
-      "es_password": "{{ .Values.elasticsearch.password }}",
-      "es_ssl": {{ .Values.elasticsearch.useSsl }},
-      "writeback_index": "{{ .Values.writebackIndex }}"
-    }
-    
+    {{ include "elastalert.apiconfig" . | b64enc }}
