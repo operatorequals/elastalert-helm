@@ -63,10 +63,3 @@ alert_time_limit:
   "writeback_index": "{{ .Values.writebackIndex }}"
 }
 {{- end }}
-
-
-
-{{- define "elastalert.baserule" }}
-
-{{- .Values.baserule }}
-{{- end }}
