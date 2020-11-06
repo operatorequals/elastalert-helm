@@ -42,7 +42,6 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-
           volumeMounts:
             - name: data
               mountPath: '/opt/elastalert/rules'
@@ -101,14 +100,12 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-
         - name: baserule-config
-          configMap:
-            name: {{ template "elastalert.fullname" . }}-baserule-config
+          secret:
+            secretName: {{ template "elastalert.fullname" . }}-baserule-config
             items:
             - key: baserule_config
               path: BaseRule.config
-
         - name: config
           secret:
             defaultMode: 420
@@ -116,7 +113,6 @@ spec:
             items:
               - key: elastalert_config
                 path: config.yaml
-
         - name: api-config
           secret:
             defaultMode: 420
@@ -124,14 +120,12 @@ spec:
             items:
               - key: elastalert_api_config
                 path: config.json
-
         - name: rules
-          configMap:
-            name: {{ template "elastalert.fullname" . }}-rules
+          secret:
+            secretName: {{ template "elastalert.fullname" . }}-rules
             items:
 {{- range $key, $value := .Values.rules }}
             - key: {{ $key }}
               path: {{ $key }}.yaml
               mode: 0777
-
 {{- end }}
