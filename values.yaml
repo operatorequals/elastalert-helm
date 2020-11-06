@@ -7,6 +7,8 @@ replicaCount: 1
 image:
   repository: praecoapp/elastalert-server
   tag: "20201101"
+# For tags, visit:
+#   https://hub.docker.com/repository/docker/praecoapp/elastalert-server
   # tag: latest
   pullPolicy: IfNotPresent
 imagePullSecrets: []
@@ -94,7 +96,7 @@ affinity: {}
 
 elasticsearch:
   # elasticsearch endpoint e.g. (svc.namespace||svc)
-  host: "cluster-es-http.default"
+  host: ""
   # elasticsearch port
   port: 9200
   # whether or not to connect to es_host using TLS
@@ -102,7 +104,7 @@ elasticsearch:
   # Username if authenticating to ES with basic auth
   username: "elastic"
   # Password if authenticating to ES with basic auth
-  password: "z4k74AXr8Yo2R485jc1J5oHE"
+  password: ""
   # whether or not to verify TLS certificates
   verifyCerts: "true"
   # Enable certificate based authentication
@@ -118,7 +120,7 @@ extraVolumes:
   - name: es-certs
     secret:
       defaultMode: 420
-      secretName: cluster-es-http-certs-internal
+      secretName: ""
 extraVolumeMounts:
   - name: es-certs
     mountPath: /certs
@@ -148,6 +150,24 @@ writebackIndex: elastalert
 # and will be stored in a Kubernetes Secret
 baserule: |-
   slack_emoji_override: ':postal_horn:'
-  slack_webhook_url: https://securosophy.com
+  slack_webhook_url: https://hooks.slack.com/services/XX/XXX/XXXX
 
+# Set to 'true' to be able to 'Edit' the alerts from interfaces like praeco
+# by consuming the elastalert-server API
+# Set to 'false' for immutable rules - meant for production
+rules_immutable: false
 
+# The Elastalert Rules are set here in a hash format.
+# For rule syntax visit:
+#   https://elastalert.readthedocs.io/en/latest/running_elastalert.html#creating-a-rule
+rules: {}
+# The below rule will create a `test-rule.yaml` under `/opt/elastalert/rules`.
+# The file will be writable
+  # test-rule: |-
+  #   filter:
+  #     - query:
+  #         query_string:
+  #           query: |
+  #             '@timestamp:*'
+  # index: logstash-*
+  # type: any

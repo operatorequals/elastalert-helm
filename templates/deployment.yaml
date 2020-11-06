@@ -26,7 +26,7 @@ spec:
       initContainers:
         - name: volume-mount-hack
           image: busybox
-          command: ["sh", "-c", "cp /opt/elastalert/ruleset/* /opt/elastalert/rules/; chmod -R 777 /opt/elastalert/rules; chmod -R 777 /opt/elastalert/rule_templates;"]
+          command: ["sh", "-c", "cp /opt/elastalert/ruleset/* /opt/elastalert/rules/; chmod -R {{ include "elastalert.rules_immutable" . }} /opt/elastalert/rules; chmod -R {{ include "elastalert.rules_immutable" . }} /opt/elastalert/rule_templates;"]
           volumeMounts:
           - name: rules
             mountPath: '/opt/elastalert/ruleset'
