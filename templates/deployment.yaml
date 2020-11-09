@@ -38,6 +38,14 @@ spec:
             subPath: rule_templates
       containers:
         - name: {{ .Chart.Name }}
+          env:
+          {{- if .Values.elasticsearch.verifyCerts }}
+          - name: NODE_EXTRA_CA_CERTS
+            value: {{ .Values.elasticsearch.caCerts | quote }}
+          {{- else }}
+          - name: NODE_TLS_REJECT_UNAUTHORIZED
+            value: "0"
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
