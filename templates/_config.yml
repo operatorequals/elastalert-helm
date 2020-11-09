@@ -32,7 +32,7 @@ ca_certs: {{ .Values.elasticsearch.caCerts }}
 alert_time_limit:
   minutes: {{ .Values.alertRetryLimitMins }}
 {{- if .Values.extraConfigOptions }}
-{{ toYaml .Values.extraConfigOptions | indent 4 }}
+{{ toYaml .Values.extraConfigOptions }}
 {{- end }}
 {{- end }}
 
@@ -60,11 +60,14 @@ alert_time_limit:
   "es_username": "{{ .Values.elasticsearch.username }}",
   "es_password": "{{ .Values.elasticsearch.password }}",
   "es_ssl": {{ .Values.elasticsearch.useSsl }},
+  {{- if .Values.elasticsearch.verifyCerts }}
+  "es_ca_certs": {{ .Values.elasticsearch.caCerts | quote }}, 
+  {{- end }}
   "writeback_index": "{{ .Values.writebackIndex }}"
 }
 {{- end }}
 
 
 {{- define "elastalert.rules_immutable" }}
-{{- if .Values.rules_immutable }}666{{- else }}644{{- end }}
+{{- if .Values.rules_immutable }}755{{- else }}777{{- end }}
 {{- end }}
