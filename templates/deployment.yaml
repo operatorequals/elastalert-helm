@@ -102,20 +102,21 @@ spec:
           {{- end }}
         - name: baserule-config
           secret:
+            defaultMode: 0775
             secretName: {{ template "elastalert.fullname" . }}-baserule-config
             items:
             - key: baserule_config
               path: BaseRule.config
         - name: config
           secret:
-            defaultMode: 420
+            defaultMode: 0755
             secretName: {{ template "elastalert.fullname" . }}-config
             items:
               - key: elastalert_config
                 path: config.yaml
         - name: api-config
           secret:
-            defaultMode: 420
+            defaultMode: 0755
             secretName: {{ template "elastalert.fullname" . }}-config
             items:
               - key: elastalert_api_config
