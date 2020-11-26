@@ -75,11 +75,12 @@ spec:
               containerPort: {{ $port.containerPort }}
               protocol: {{ $port.protocol }}
   {{- end }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
+          livenessProbe: # Checks if the Elastalert Python process is running
+            exec:
+              command:
+              - pgrep
+              - python3
+          readinessProbe: # Checks if the Elastalert API is responding
             httpGet:
               path: /
               port: http
